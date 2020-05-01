@@ -1,0 +1,47 @@
+﻿<Controls:MetroWindow x:Class="BinanceMarketMaker.WPF.StrategyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BinanceMarketMaker.WPF"
+        mc:Ignorable="d"
+         WindowStartupLocation="CenterScreen" 
+        Title="{Binding Strategy.Pair}" Height="450" MaxHeight="450" Width="900" MaxWidth="900">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="160"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="160"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="36"/>
+            <RowDefinition Height="36"/>
+            <RowDefinition Height="36"/>
+            <RowDefinition Height="36"/>
+            <RowDefinition Height="36"/>
+            <RowDefinition Height="36"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="15 0" FontSize="18">Quantity:</TextBlock>
+        <Controls:NumericUpDown IsEnabled="{Binding IsNewOrder}" x:Name="txbQuantity"  Value="{Binding Strategy.QuantityUSDT}" VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" Controls:TextBoxHelper.Watermark="USDT" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="15 0"></Controls:NumericUpDown>
+            <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="15 0" FontSize="18">Ticks up/down:</TextBlock>
+        <Controls:NumericUpDown x:Name="txbTickUp" Value="{Binding Strategy.TickUp}" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" Controls:TextBoxHelper.Watermark="Tick"  Interval="1" Margin="15 0" Controls:TextBoxHelper.UseFloatingWatermark="True"></Controls:NumericUpDown>
+        <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="15 0" FontSize="18">Wall buy:</TextBlock>
+        <Controls:NumericUpDown x:Name="txbWallBuy" Value="{Binding Strategy.WallBuyUSDT}" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch" Controls:TextBoxHelper.Watermark="USDT"  Margin="15 0" Controls:TextBoxHelper.UseFloatingWatermark="True"></Controls:NumericUpDown>
+        <TextBlock Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="15 0" FontSize="18">Wall sell:</TextBlock>
+        <Controls:NumericUpDown x:Name="txbWallSell" Value="{Binding Strategy.WallSellUSDT}" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Controls:TextBoxHelper.Watermark="USDT"  Margin="15 0" Controls:TextBoxHelper.UseFloatingWatermark="True"></Controls:NumericUpDown>
+        <TextBlock Grid.Row="2" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="15 0" FontSize="18">Min gap buy:</TextBlock>
+        <Controls:NumericUpDown x:Name="txbMinGapBuy" Value="{Binding Strategy.MinGapBuy}" Grid.Row="2" Grid.Column="4" HorizontalAlignment="Stretch" Controls:TextBoxHelper.Watermark="Tick"  Interval="1" Margin="15 0" Controls:TextBoxHelper.UseFloatingWatermark="True"></Controls:NumericUpDown>
+        <TextBlock Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="15 0" FontSize="18">Min gap sell:</TextBlock>
+        <Controls:NumericUpDown x:Name="txbMinGapSell" Value="{Binding Strategy.MinGapSell}" Grid.Row="3" Grid.Column="4" HorizontalAlignment="Stretch" Controls:TextBoxHelper.Watermark="Tick"  Interval="1" Margin="15 0" Controls:TextBoxHelper.UseFloatingWatermark="True"></Controls:NumericUpDown>
+
+        <Button x:Name="btnCancel" Click="btnCancel_Click" Width="130" HorizontalAlignment="Right" Grid.Row="6" Grid.Column="2" Margin="2">Cancel</Button>
+        <Button x:Name="btnStart" Click="btnStart_Click" Width="130" HorizontalAlignment="Left" Grid.Row="6" Grid.Column="3" Margin="2">Start</Button>
+    </Grid>
+</Controls:MetroWindow>

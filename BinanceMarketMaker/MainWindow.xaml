@@ -1,0 +1,170 @@
+﻿<Controls:MetroWindow x:Class="BinanceMarketMaker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:local="clr-namespace:BinanceMarketMaker"
+        WindowTransitionsEnabled="True"
+        WindowState="Maximized"         
+        xmlns:Converters="clr-namespace:BinanceMarketMaker.WPF.Converters"
+        mc:Ignorable="d"
+        Title="BINANCE MARKET MAKER v1.0" Height="450" Width="800" Loaded="MetroWindow_Loaded">
+    <Window.Resources>
+        <Converters:PriceChangeConverters x:Key="PriceChangeConverters" />
+        <Converters:StatusConverter x:Key="StatusConverter" />
+    </Window.Resources>
+    <DockPanel>
+        <Expander x:Name="expSettings"  DockPanel.Dock="Left" ExpandDirection="Right" IsExpanded="False"  BorderThickness="1 0 1 0">
+            <Expander.Header>
+                <TextBlock Foreground="White" Text="SETTINGS">
+                    <TextBlock.LayoutTransform>
+                        <RotateTransform Angle="90"/>
+                    </TextBlock.LayoutTransform>
+
+                </TextBlock>
+            </Expander.Header>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <GroupBox Margin="10" Style="{x:Null}" Header="API" Grid.Row="0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90"></ColumnDefinition>
+                            <ColumnDefinition Width="140"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="50"></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 5 0">Api Key:</TextBlock>
+                        <TextBox x:Name="txbApiKey" Grid.Column="1" Grid.Row="0" Margin="5"></TextBox>
+                        <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 5 0">Secret Key:</TextBlock>
+                        <TextBox x:Name="txbSecretKey" Grid.Column="1" Grid.Row="1" Margin="5"></TextBox>
+                        <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 5 0">Fees:</TextBlock>
+                        <TextBox x:Name="txbFees" Grid.Column="1" Grid.Row="2" Margin="5" Controls:TextBoxHelper.Watermark="%"></TextBox>
+                        <Button x:Name="btnLoadCandles"   Grid.Column="1" Grid.Row="3" Margin="8" >Save</Button>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </Expander>
+        <DockPanel DockPanel.Dock="Right">
+            <Expander DockPanel.Dock="Top" IsExpanded="True" Header="Tickers">
+                <Grid Margin="-2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Margin="2 1 15 2"   Cursor="Hand" x:Name="btnRefreshTickers" Click="btnRefreshTickers_Click">Refresh</Button>
+                    <DataGrid Grid.Row="1" x:Name="grdTickers" Height="400" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" IsReadOnly="True" Margin="0" ItemsSource="{Binding Path=Tickers, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"   >
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="Pair"  SortMemberPath="Pair" CanUserSort="True" CanUserReorder="True" CanUserResize="True"  Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" Text="{Binding Pair}" FontWeight="Bold" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Bid" Binding="{Binding Bid}"  Width="*"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Ask" Binding="{Binding Ask}"  Width="*"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Last" Binding="{Binding Last}"  Width="*"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Spread" Binding="{Binding Spread, StringFormat={}{0} %}"  Width="*"></DataGridTextColumn>
+                            <DataGridTextColumn Header="# Tick" Binding="{Binding TickSpread}"  Width="*"></DataGridTextColumn>
+                            <DataGridTextColumn Header="High" Binding="{Binding High}"  Width="*"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Low" Binding="{Binding Low}"  Width="*"></DataGridTextColumn>
+                            <DataGridTemplateColumn Header="Change" IsReadOnly="True" SortMemberPath="ChangeH24" CanUserSort="True" CanUserReorder="True" CanUserResize="True"  Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding ChangeH24, StringFormat={}{0} %}" Foreground="{Binding Path=ChangeH24, Converter={StaticResource PriceChangeConverters}}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="# Trades" Binding="{Binding Trades}" Width="*"></DataGridTextColumn>
+                            <DataGridTextColumn Header="BTC Volume" Binding="{Binding QuoteVolume}" SortDirection="Descending" Width="*"></DataGridTextColumn>
+                            <DataGridTemplateColumn Header="" IsReadOnly="True" CanUserSort="False" Width="70">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Cursor="Hand" Click="btnCreateStrategy_Click">Trade</Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                        <DataGrid.Style>
+                            <Style  BasedOn="{StaticResource {x:Type DataGrid}}" TargetType="{x:Type DataGrid}">
+                                <Setter Property="AlternatingRowBackground" Value="#FFF7F7F7" />
+                            </Style>
+                        </DataGrid.Style>
+                    </DataGrid>
+                </Grid>
+
+            </Expander>
+            <Expander  DockPanel.Dock="Bottom" IsExpanded="True" Header="Orders">
+                <DataGrid MinHeight="400" x:Name="grdOrders" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" IsReadOnly="True" Margin="0" ItemsSource="{Binding Orders, NotifyOnSourceUpdated=True, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Pair"  SortMemberPath="Pair" CanUserSort="True" CanUserReorder="True" CanUserResize="True"  Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" Text="{Binding Pair, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontWeight="Bold" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Amount" Binding="{Binding Amount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
+                        <DataGridTemplateColumn Header="Status" IsReadOnly="True" SortMemberPath="Status" CanUserSort="True" CanUserReorder="True" CanUserResize="True"  Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="{Binding Path=Status,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StatusConverter}}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Start Order" Binding="{Binding StartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SortDirection="Descending" Width="*"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Buy Price" Binding="{Binding BuyPrice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Buy Close Date" Binding="{Binding BuyOrderCompletedDatetime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Sell Price" Binding="{Binding SellPrice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Sell Close Date" Binding="{Binding SellOrderCompletedDatetime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Bid" Binding="{Binding Bid, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Ask" Binding="{Binding Ask, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Error Message" Binding="{Binding ErrorMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
+                        <DataGridTemplateColumn Header="Profit %" IsReadOnly="True" SortMemberPath="ProfitPercentage" CanUserSort="True" CanUserReorder="True" CanUserResize="True"  Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ProfitPercentage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,TargetNullValue='', StringFormat={}{0} %}" Foreground="{Binding Path=ProfitPercentage,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource PriceChangeConverters}}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Profit USDT" IsReadOnly="True" SortMemberPath="ProfitUSD" CanUserSort="True" CanUserReorder="True" CanUserResize="True"  Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ProfitUSD, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, TargetNullValue='', StringFormat={}{0} $}" Foreground="{Binding Path=ProfitUSD, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource PriceChangeConverters}}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="" IsReadOnly="True" CanUserSort="False" Width="70">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Cursor="Hand" Click="btnEditOrder_Click">Edit</Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="" IsReadOnly="True" CanUserSort="False" Width="70">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Cursor="Hand" Foreground="Red" Click="btnDeleteOrder_Click">Delete</Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                    <DataGrid.Style>
+                        <Style  BasedOn="{StaticResource {x:Type DataGrid}}" TargetType="{x:Type DataGrid}">
+                            <Setter Property="AlternatingRowBackground" Value="#FFF7F7F7" />
+                        </Style>
+                    </DataGrid.Style>
+                </DataGrid>
+            </Expander>
+        </DockPanel>
+    </DockPanel>
+</Controls:MetroWindow>
