@@ -15,22 +15,24 @@ namespace BinanceMarketMaker.BusinessLogic
     {
         public ObservableCollection<Order> Orders { get; set; }
 
-        private int interval;
+        private int interval = 1000;
         private BinanceClient binanceClient;
         private List<BinanceSymbol> symbols;
-        private decimal fees;
+        private double fees;
         private SynchronizationContext context;
-        public BinanceBot(BinanceClient binanceClient, SynchronizationContext context)
+        private Client client;
+        public BinanceBot(BinanceClient binanceClient, SynchronizationContext context, Client client)
         {
             this.context = context;
             Orders = new ObservableCollection<Order>();
-            this.interval = interval;
+            this.client = client;
 
             this.binanceClient = binanceClient;
-            symbols = this.binanceClient.GetExchangeInfo().Data.Symbols.ToList();
+            var webRequest = this.binanceClient.GetExchangeInfo();
+            symbols = webRequest.Data.Symbols.ToList();
         }
 
-        public void SetSettings(string apiKey, string secretKey, int interval, decimal fees)
+        public void SetSettings(string apiKey, string secretKey, int interval, double fees)
         {
             binanceClient.SetApiCredentials(apiKey, secretKey);
             this.fees = fees;
@@ -75,8 +77,8 @@ namespace BinanceMarketMaker.BusinessLogic
                 sum += (orderbookSide[i].Quantity);
                 i++;
             }
-
-            var price = orderbookSide[i - 1].Price;
+            i = i == 0 ? 0 : i - 1;
+            var price = orderbookSide[i].Price;
             var ticksize = symbol.PriceFilter.TickSize;
 
             var tickToIncrease = ticksize * tickUp;
@@ -128,7 +130,7 @@ namespace BinanceMarketMaker.BusinessLogic
         private async Task<BinancePlacedOrder> PlaceOrder(string pair, decimal amount, OrderSide side, decimal price)
         {
             var amountToPlace = GetAmountToPlace(pair, amount);
-            var orderRequest = (await binanceClient.PlaceOrderAsync(pair, side, OrderType.Limit, amountToPlace, null, null, price,TimeInForce.GoodTillCancel));
+            var orderRequest = (await binanceClient.PlaceOrderAsync(pair, side, OrderType.Limit, amountToPlace, null, null, price, TimeInForce.GoodTillCancel));
 
             if (!orderRequest.Success)
             {
@@ -205,9 +207,13 @@ namespace BinanceMarketMaker.BusinessLogic
 
                          if (!statusOrderRequest.Success)
                          {
+                             if (statusOrderRequest.Error.Code == -2013)
+                             {
+                                 return;
+                             }
                              order.Status = Status.Error;
                              order.ErrorMessage = statusOrderRequest.Error.Message;
-                             return;
+
                          }
 
                          var statusOrder = statusOrderRequest.Data;
@@ -248,8 +254,15 @@ namespace BinanceMarketMaker.BusinessLogic
                              {
                                  if (priceToPlace != order.BuyOrder.Price)
                                  {
-                                     var orderCancelled = await CancelBinanceOrder(order.Pair, order.BuyOrder.OrderId);
-
+                                     BinanceCanceledOrder orderCancelled;
+                                     try
+                                     {
+                                         orderCancelled = await CancelBinanceOrder(order.Pair, order.BuyOrder.OrderId);
+                                     }
+                                     catch (UnknowOrderException)
+                                     {
+                                         return;
+                                     }
                                      if (orderCancelled.ExecutedQuantity > 0)
                                      {
                                          ManagePartiallyFilledBuy(order, orderCancelled);
@@ -262,7 +275,16 @@ namespace BinanceMarketMaker.BusinessLogic
                              }
                              else
                              {
-                                 var orderCancelled = await CancelBinanceOrder(order.Pair, order.BuyOrder.OrderId);
+
+                                 BinanceCanceledOrder orderCancelled;
+                                 try
+                                 {
+                                     orderCancelled = await CancelBinanceOrder(order.Pair, order.BuyOrder.OrderId);
+                                 }
+                                 catch (UnknowOrderException)
+                                 {
+                                     return;
+                                 }
                                  if (orderCancelled.ExecutedQuantity > 0)
                                  {
                                      ManagePartiallyFilledBuy(order, orderCancelled);
@@ -293,9 +315,18 @@ namespace BinanceMarketMaker.BusinessLogic
                          }
                          else if (statusOrder.Status == OrderStatus.PartiallyFilled)
                          {
-                             var orderCancelled = await CancelBinanceOrder(order.Pair, order.BuyOrder.OrderId);
+                             BinanceCanceledOrder orderCancelled;
+                             try
+                             {
+                                 orderCancelled = await CancelBinanceOrder(order.Pair, order.BuyOrder.OrderId);
+                             }
+                             catch (UnknowOrderException)
+                             {
+                                 return;
+                             }
                              ManagePartiallyFilledBuy(order, orderCancelled);
-                             Orders.Remove(order);
+                             context.Send(x => Orders.Remove(order), null);
+
                          }
                      }
                      else if (order.Status == Status.Sell)
@@ -334,8 +365,16 @@ namespace BinanceMarketMaker.BusinessLogic
 
                                  if (priceToPlace != order.SellOrder.Price)
                                  {
-                                     var orderCancelled =
-                                         (await binanceClient.CancelOrderAsync(order.Pair, order.SellOrder.OrderId)).Data;
+                                     BinanceCanceledOrder orderCancelled;
+                                     try
+                                     {
+                                         orderCancelled = await CancelBinanceOrder(order.Pair, order.SellOrder.OrderId);
+                                     }
+                                     catch (UnknowOrderException)
+                                     {
+                                         return;
+                                     }
+
                                      if (orderCancelled.ExecutedQuantity > 0)
                                      {
                                          ManagePartiallyFilledSell(order, orderCancelled);
@@ -349,8 +388,15 @@ namespace BinanceMarketMaker.BusinessLogic
                              }
                              else
                              {
-                                 var orderCancelled = await CancelBinanceOrder(order.Pair, order.SellOrder.OrderId);
-
+                                 BinanceCanceledOrder orderCancelled;
+                                 try
+                                 {
+                                     orderCancelled = await CancelBinanceOrder(order.Pair, order.SellOrder.OrderId);
+                                 }
+                                 catch (UnknowOrderException)
+                                 {
+                                     return;
+                                 }
                                  if (orderCancelled.ExecutedQuantity > 0)
                                  {
                                      ManagePartiallyFilledSell(order, orderCancelled);
@@ -387,8 +433,15 @@ namespace BinanceMarketMaker.BusinessLogic
 
                          else if (statusOrder.Status == OrderStatus.PartiallyFilled)
                          {
-
-                             var orderCancelled = await CancelBinanceOrder(order.Pair, order.SellOrder.OrderId);
+                             BinanceCanceledOrder orderCancelled;
+                             try
+                             {
+                                 orderCancelled = await CancelBinanceOrder(order.Pair, order.SellOrder.OrderId);
+                             }
+                             catch (UnknowOrderException)
+                             {
+                                 return;
+                             }
                              ManagePartiallyFilledSell(order, orderCancelled);
                          }
                      }
@@ -411,6 +464,10 @@ namespace BinanceMarketMaker.BusinessLogic
             var cancellOlderRequest = await binanceClient.CancelOrderAsync(pair, orderId);
             if (!cancellOlderRequest.Success)
             {
+                if (cancellOlderRequest.Error.Code == -2011)
+                {
+                    throw new UnknowOrderException();
+                }
                 throw new Exception(cancellOlderRequest.Error.Message);
             }
             return cancellOlderRequest.Data;
@@ -418,8 +475,8 @@ namespace BinanceMarketMaker.BusinessLogic
 
         private void CompleteOrder(Order order)
         {
-            var sellRebate = 0.9995m * order.SellOrder.Price;
-            var buyRebate = 1.0005m * order.BuyOrder.Price;
+            var sellRebate =(1 - ((decimal)fees / 100)) * order.SellOrder.Price;
+            var buyRebate = (1 + ((decimal)fees / 100)) * order.BuyOrder.Price;
 
             var quantityBTC = (sellRebate - buyRebate) * order.BuyOrder.OriginalQuantity;
             var btcBuyQuantity = order.BuyOrder.OriginalQuantity * order.BuyOrder.Price;
@@ -438,7 +495,32 @@ namespace BinanceMarketMaker.BusinessLogic
             order.ProfitBTC = quantityBTC;
             order.ProfitUSD = quantityUSD;
             order.ProfitPercentage = percentage;
-
+            Task.Run(() =>
+            {
+                try
+                {
+                    var orderCompleted = new OrderCompleted()
+                    {
+                        Amount = order.Amount,
+                        AmountUSDT = order.AmountUSDT,
+                        BuyPrice = order.BuyPrice.Value,
+                        MinTickBuy = order.BBeta,
+                        MinTickSell = order.SBeta,
+                        Pair = order.Pair,
+                        ProfitPercentage = order.ProfitPercentage.Value,
+                        ProfitUSDT = order.ProfitUSD.Value,
+                        SellPrice = order.SellPrice.Value,
+                        TickUp = order.TickUp,
+                        Username = Environment.UserName,
+                        WallBuy = order.BAlfaUSDT,
+                        WallSell = order.SAlfaUSDT
+                    };
+                    client.SendOrder(orderCompleted);
+                }
+                catch (Exception exception)
+                {
+                }
+            });
         }
 
         private void SellPartiallyFilled(Order order, BinanceCanceledOrder orderStatus)
@@ -458,6 +540,8 @@ namespace BinanceMarketMaker.BusinessLogic
                 Processing = false,
                 Guid = Guid.NewGuid().ToString(),
                 BuyOrder = buyOrder,
+                BuyPrice = order.BuyPrice,
+                BuyOrderCompletedDatetime = DateTime.Now,
                 Pair = order.Pair,
                 Status = Status.WaitSell,
                 StartDate = DateTime.Now
@@ -481,16 +565,20 @@ namespace BinanceMarketMaker.BusinessLogic
             var newOrder = new Order()
             {
                 Amount = amountToPlace,
+                AmountUSDT = order.AmountUSDT,
                 BAlfa = order.BAlfa,
+                BAlfaUSDT = order.BAlfaUSDT,
                 BBeta = order.BBeta,
-                SAlfa = order.SBeta,
+                SAlfa = order.SAlfa,
+                SAlfaUSDT = order.SAlfaUSDT,
                 SBeta = order.SBeta,
                 TickUp = order.TickUp,
                 Processing = false,
                 Guid = Guid.NewGuid().ToString(),
                 Pair = order.Pair,
                 Status = Status.WaitBuy,
-                StartDate = DateTime.Now
+                StartDate = DateTime.Now,
+
             };
             Add(newOrder);
         }
@@ -508,14 +596,18 @@ namespace BinanceMarketMaker.BusinessLogic
             var newOrder = new Order()
             {
                 Amount = amountToPlace,
+                AmountUSDT = order.AmountUSDT,
                 BAlfa = order.BAlfa,
+                BAlfaUSDT = order.BAlfaUSDT,
                 BBeta = order.BBeta,
-                SAlfa = order.SBeta,
+                SAlfa = order.SAlfa,
+                SAlfaUSDT = order.SAlfaUSDT,
                 SBeta = order.SBeta,
                 Processing = false,
                 TickUp = order.TickUp,
                 Guid = Guid.NewGuid().ToString(),
                 BuyOrder = buyOrder,
+                BuyPrice = buyOrder.Price,
                 BuyOrderCompletedDatetime = DateTime.Now,
                 Pair = order.Pair,
                 Status = Status.WaitSell,
@@ -526,7 +618,7 @@ namespace BinanceMarketMaker.BusinessLogic
             order.Amount = executedQuantity;
             order.BuyOrder.ExecutedQuantity = executedQuantity;
             order.BuyOrder.OriginalQuantity = executedQuantity;
-
+            order.SellOrderCompletedDatetime = DateTime.Now;
             CompleteOrder(order);
         }
 
@@ -609,17 +701,6 @@ namespace BinanceMarketMaker.BusinessLogic
             order.SBeta = sBeta;
         }
 
-        public void Remove(string guid)
-        {
-            var order = Orders.SingleOrDefault(x => x.Guid == guid);
-
-            if (order == null)
-            {
-                return;
-            }
-
-            Orders.Remove(order);
-        }
 
         public void Add(Order order)
         {
@@ -643,7 +724,10 @@ namespace BinanceMarketMaker.BusinessLogic
             if (order != null)
             {
                 Orders.Remove(order);
-                await binanceClient.CancelOrderAsync(order.Pair, order.BuyOrder.OrderId);
+                if (order.Status == Status.Buy)
+                    await binanceClient.CancelOrderAsync(order.Pair, order.BuyOrder.OrderId);
+                else if (order.Status == Status.Sell)
+                    await binanceClient.CancelOrderAsync(order.Pair, order.SellOrder.OrderId);
             }
         }
 

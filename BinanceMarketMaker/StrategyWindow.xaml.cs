@@ -55,8 +55,8 @@ namespace BinanceMarketMaker.WPF
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = false;
-            this.Close();
+                this.DialogResult = false;
+                this.Close();  
         }
 
         private async void btnStart_Click(object sender, RoutedEventArgs e)

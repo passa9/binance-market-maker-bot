@@ -29,7 +29,7 @@
                     <RowDefinition Height="*"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
-                <GroupBox Margin="10" Style="{x:Null}" Header="API" Grid.Row="0">
+                <GroupBox Margin="10" Style="{x:Null}" Header="Settings" Grid.Row="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="90"></ColumnDefinition>
@@ -39,16 +39,18 @@
                             <RowDefinition Height="40"></RowDefinition>
                             <RowDefinition Height="40"></RowDefinition>
                             <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
                             <RowDefinition Height="50"></RowDefinition>
                         </Grid.RowDefinitions>
-
-                        <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 5 0">Api Key:</TextBlock>
-                        <TextBox x:Name="txbApiKey" Grid.Column="1" Grid.Row="0" Margin="5"></TextBox>
-                        <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 5 0">Secret Key:</TextBlock>
-                        <TextBox x:Name="txbSecretKey" Grid.Column="1" Grid.Row="1" Margin="5"></TextBox>
-                        <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 5 0">Fees:</TextBlock>
-                        <TextBox x:Name="txbFees" Grid.Column="1" Grid.Row="2" Margin="5" Controls:TextBoxHelper.Watermark="%"></TextBox>
-                        <Button x:Name="btnLoadCandles"   Grid.Column="1" Grid.Row="3" Margin="8" >Save</Button>
+                 
+                        
+                        <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 5 0">Api Key:</TextBlock>
+                        <TextBox x:Name="txbApiKey" Grid.Column="1" Grid.Row="1" Margin="5"></TextBox>
+                        <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 5 0">Secret Key:</TextBlock>
+                        <TextBox x:Name="txbSecretKey" Grid.Column="1" Grid.Row="2" Margin="5"></TextBox>
+                        <TextBlock Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 5 0">Fees:</TextBlock>
+                        <Controls:NumericUpDown x:Name="txbFees" Grid.Column="1" Grid.Row="3" Margin="5" Controls:TextBoxHelper.Watermark="%"></Controls:NumericUpDown>
+                        <Button x:Name="btnSaveSettings"  Click="btnSaveSettings_Click" Grid.Column="1" Grid.Row="4" Margin="8" >Save</Button>
                     </Grid>
                 </GroupBox>
             </Grid>
@@ -104,7 +106,9 @@
 
             </Expander>
             <Expander  DockPanel.Dock="Bottom" IsExpanded="True" Header="Orders">
-                <DataGrid MinHeight="400" x:Name="grdOrders" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" IsReadOnly="True" Margin="0" ItemsSource="{Binding Orders, NotifyOnSourceUpdated=True, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Row="1" >
+
+                    <DataGrid MinHeight="400" x:Name="grdOrders"  IsReadOnly="True" Margin="0" ItemsSource="{Binding Orders, NotifyOnSourceUpdated=True, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Header="Pair"  SortMemberPath="Pair" CanUserSort="True" CanUserReorder="True" CanUserResize="True"  Width="*">
                             <DataGridTemplateColumn.CellTemplate>
@@ -121,11 +125,11 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Start Order" Binding="{Binding StartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SortDirection="Descending" Width="*"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Start Order" Binding="{Binding StartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="125"></DataGridTextColumn>
                         <DataGridTextColumn Header="Buy Price" Binding="{Binding BuyPrice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Buy Close Date" Binding="{Binding BuyOrderCompletedDatetime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Buy Close Date" Binding="{Binding BuyOrderCompletedDatetime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="125"></DataGridTextColumn>
                         <DataGridTextColumn Header="Sell Price" Binding="{Binding SellPrice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Sell Close Date" Binding="{Binding SellOrderCompletedDatetime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Sell Close Date" Binding="{Binding SellOrderCompletedDatetime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="125"></DataGridTextColumn>
                         <DataGridTextColumn Header="Bid" Binding="{Binding Bid, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
                         <DataGridTextColumn Header="Ask" Binding="{Binding Ask, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
                         <DataGridTextColumn Header="Error Message" Binding="{Binding ErrorMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="*"></DataGridTextColumn>
@@ -161,9 +165,13 @@
                     <DataGrid.Style>
                         <Style  BasedOn="{StaticResource {x:Type DataGrid}}" TargetType="{x:Type DataGrid}">
                             <Setter Property="AlternatingRowBackground" Value="#FFF7F7F7" />
+
+                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
                         </Style>
                     </DataGrid.Style>
                 </DataGrid>
+                 </ScrollViewer>
             </Expander>
         </DockPanel>
     </DockPanel>

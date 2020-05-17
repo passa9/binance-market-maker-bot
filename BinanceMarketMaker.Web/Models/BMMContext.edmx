@@ -1,0 +1,380 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="apikeyModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="__EFMigrationsHistory">
+          <Key>
+            <PropertyRef Name="MigrationId" />
+          </Key>
+          <Property Name="MigrationId" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="ProductVersion" Type="nvarchar" MaxLength="32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LicenseKey">
+          <Key>
+            <PropertyRef Name="LicenseKeyId" />
+          </Key>
+          <Property Name="LicenseKeyId" Type="int" Nullable="false" />
+          <Property Name="Key" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="OrderCompleted">
+          <Key>
+            <PropertyRef Name="OrderCompletedId" />
+          </Key>
+          <Property Name="Username" Type="varchar" MaxLength="255" />
+          <Property Name="Pair" Type="varchar" MaxLength="255" />
+          <Property Name="Amount" Type="decimal" Precision="10" Scale="8" />
+          <Property Name="AmountUSDT" Type="decimal" Precision="10" Scale="8" />
+          <Property Name="BuyPrice" Type="decimal" Precision="10" Scale="8" />
+          <Property Name="SellPrice" Type="decimal" Precision="10" Scale="8" />
+          <Property Name="WallBuy" Type="decimal" Precision="10" Scale="8" />
+          <Property Name="WallSell" Type="decimal" Precision="10" Scale="8" />
+          <Property Name="MinTickBuy" Type="decimal" Precision="10" Scale="8" />
+          <Property Name="MinTickSell" Type="decimal" Precision="10" Scale="8" />
+          <Property Name="TickUp" Type="decimal" Precision="10" Scale="8" />
+          <Property Name="ProfitPercentage" Type="decimal" Precision="10" Scale="8" />
+          <Property Name="ProfitUSDT" Type="decimal" Precision="10" Scale="8" />
+          <Property Name="Timestamp" Type="datetime2" Precision="0" />
+          <Property Name="OrderCompletedId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+        </EntityType>
+        <EntityType Name="QRCodes">
+          <Key>
+            <PropertyRef Name="QRCodeId" />
+          </Key>
+          <Property Name="QRCodeId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="bigint" Nullable="false" />
+          <Property Name="Image" Type="varbinary(max)" />
+          <Property Name="Filename" Type="nvarchar(max)" />
+          <Property Name="TimeStamp" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ChatId" Type="bigint" Nullable="false" />
+          <Property Name="Username" Type="nvarchar(max)" />
+          <Property Name="ApiKey" Type="nvarchar(max)" />
+          <Property Name="ApiSecret" Type="nvarchar(max)" />
+          <Property Name="EnableUpdate" Type="bit" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="BTC" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="ETH" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Exchange" Type="nvarchar(max)" />
+          <Property Name="LTC" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="USDT" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserSettings">
+          <Key>
+            <PropertyRef Name="UserSettingsId" />
+          </Key>
+          <Property Name="ApiKey" Type="varchar" MaxLength="255" />
+          <Property Name="SecretKey" Type="varchar" MaxLength="255" />
+          <Property Name="Timestamp" Type="datetime2" Precision="0" />
+          <Property Name="UserSettingsId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BTC" Type="decimal" Precision="10" Scale="8" />
+          <Property Name="ETH" Type="decimal" Precision="10" Scale="8" />
+          <Property Name="LTC" Type="decimal" Precision="10" Scale="8" />
+          <Property Name="USDT" Type="decimal" Precision="10" Scale="8" />
+        </EntityType>
+        <!--Errori trovati durante la generazione:
+avviso 6002: Nessuna chiave primaria definita per la tabella/visualizzazione 'apikey.sys.database_firewall_rules'. La chiave è stata dedotta e la definizione è stata creata come tabella/visualizzazione di sola lettura.-->
+        <EntityType Name="database_firewall_rules">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="name" />
+            <PropertyRef Name="start_ip_address" />
+            <PropertyRef Name="end_ip_address" />
+            <PropertyRef Name="create_date" />
+            <PropertyRef Name="modify_date" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="start_ip_address" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="end_ip_address" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="create_date" Type="datetime" Nullable="false" />
+          <Property Name="modify_date" Type="datetime" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_QRCodes_Users_UserId">
+          <End Role="Users" Type="Self.Users" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="QRCodes" Type="Self.QRCodes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="QRCodes">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="apikeyModelStoreContainer">
+          <EntitySet Name="__EFMigrationsHistory" EntityType="Self.__EFMigrationsHistory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LicenseKey" EntityType="Self.LicenseKey" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderCompleted" EntityType="Self.OrderCompleted" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="QRCodes" EntityType="Self.QRCodes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserSettings" EntityType="Self.UserSettings" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="database_firewall_rules" EntityType="Self.database_firewall_rules" store:Type="Views" store:Schema="sys">
+            <DefiningQuery>SELECT 
+    [database_firewall_rules].[id] AS [id], 
+    [database_firewall_rules].[name] AS [name], 
+    [database_firewall_rules].[start_ip_address] AS [start_ip_address], 
+    [database_firewall_rules].[end_ip_address] AS [end_ip_address], 
+    [database_firewall_rules].[create_date] AS [create_date], 
+    [database_firewall_rules].[modify_date] AS [modify_date]
+    FROM [sys].[database_firewall_rules] AS [database_firewall_rules]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_QRCodes_Users_UserId" Association="Self.FK_QRCodes_Users_UserId">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="QRCodes" EntitySet="QRCodes" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="apikeyModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="C__EFMigrationsHistory">
+          <Key>
+            <PropertyRef Name="MigrationId" />
+          </Key>
+          <Property Name="MigrationId" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProductVersion" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LicenseKey">
+          <Key>
+            <PropertyRef Name="LicenseKeyId" />
+          </Key>
+          <Property Name="LicenseKeyId" Type="Int32" Nullable="false" />
+          <Property Name="Key" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="OrderCompleted">
+          <Key>
+            <PropertyRef Name="OrderCompletedId" />
+          </Key>
+          <Property Name="OrderCompletedId" Type="Int32" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Pair" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Amount" Type="Decimal" Precision="10" Scale="8" />
+          <Property Name="AmountUSDT" Type="Decimal" Precision="10" Scale="8" />
+          <Property Name="BuyPrice" Type="Decimal" Precision="10" Scale="8" />
+          <Property Name="SellPrice" Type="Decimal" Precision="10" Scale="8" />
+          <Property Name="WallBuy" Type="Decimal" Precision="10" Scale="8" />
+          <Property Name="WallSell" Type="Decimal" Precision="10" Scale="8" />
+          <Property Name="MinTickBuy" Type="Decimal" Precision="10" Scale="8" />
+          <Property Name="MinTickSell" Type="Decimal" Precision="10" Scale="8" />
+          <Property Name="TickUp" Type="Decimal" Precision="10" Scale="8" />
+          <Property Name="ProfitPercentage" Type="Decimal" Precision="10" Scale="8" />
+          <Property Name="ProfitUSDT" Type="Decimal" Precision="10" Scale="8" />
+          <Property Name="Timestamp" Type="DateTime" Precision="0" />
+        </EntityType>
+        <EntityType Name="QRCode">
+          <Key>
+            <PropertyRef Name="QRCodeId" />
+          </Key>
+          <Property Name="QRCodeId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int64" Nullable="false" />
+          <Property Name="Image" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="Filename" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="TimeStamp" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="User" Relationship="Self.FK_QRCodes_Users_UserId" FromRole="QRCodes" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ChatId" Type="Int64" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ApiKey" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ApiSecret" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="EnableUpdate" Type="Boolean" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="BTC" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="ETH" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Exchange" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="LTC" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="USDT" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <NavigationProperty Name="QRCodes" Relationship="Self.FK_QRCodes_Users_UserId" FromRole="Users" ToRole="QRCodes" />
+        </EntityType>
+        <EntityType Name="UserSetting">
+          <Key>
+            <PropertyRef Name="UserSettingsId" />
+          </Key>
+          <Property Name="UserSettingsId" Type="Int32" Nullable="false" />
+          <Property Name="ApiKey" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="SecretKey" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Timestamp" Type="DateTime" Precision="0" />
+          <Property Name="BTC" Type="Decimal" Precision="10" Scale="8" />
+          <Property Name="ETH" Type="Decimal" Precision="10" Scale="8" />
+          <Property Name="LTC" Type="Decimal" Precision="10" Scale="8" />
+          <Property Name="USDT" Type="Decimal" Precision="10" Scale="8" />
+        </EntityType>
+        <Association Name="FK_QRCodes_Users_UserId">
+          <End Role="Users" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="QRCodes" Type="Self.QRCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="QRCodes">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="BMMContext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="C__EFMigrationsHistory" EntityType="Self.C__EFMigrationsHistory" />
+          <EntitySet Name="LicenseKeys" EntityType="Self.LicenseKey" />
+          <EntitySet Name="OrderCompleteds" EntityType="Self.OrderCompleted" />
+          <EntitySet Name="QRCodes" EntityType="Self.QRCode" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <EntitySet Name="UserSettings" EntityType="Self.UserSetting" />
+          <AssociationSet Name="FK_QRCodes_Users_UserId" Association="Self.FK_QRCodes_Users_UserId">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="QRCodes" EntitySet="QRCodes" />
+          </AssociationSet>
+          <EntitySet Name="database_firewall_rules" EntityType="apikeyModel.database_firewall_rules" />
+        </EntityContainer>
+        <EntityType Name="database_firewall_rules">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="name" />
+            <PropertyRef Name="start_ip_address" />
+            <PropertyRef Name="end_ip_address" />
+            <PropertyRef Name="create_date" />
+            <PropertyRef Name="modify_date" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="start_ip_address" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="end_ip_address" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="create_date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="modify_date" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="apikeyModelStoreContainer" CdmEntityContainer="BMMContext">
+          <EntitySetMapping Name="C__EFMigrationsHistory">
+            <EntityTypeMapping TypeName="apikeyModel.C__EFMigrationsHistory">
+              <MappingFragment StoreEntitySet="__EFMigrationsHistory">
+                <ScalarProperty Name="MigrationId" ColumnName="MigrationId" />
+                <ScalarProperty Name="ProductVersion" ColumnName="ProductVersion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LicenseKeys">
+            <EntityTypeMapping TypeName="apikeyModel.LicenseKey">
+              <MappingFragment StoreEntitySet="LicenseKey">
+                <ScalarProperty Name="LicenseKeyId" ColumnName="LicenseKeyId" />
+                <ScalarProperty Name="Key" ColumnName="Key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderCompleteds">
+            <EntityTypeMapping TypeName="apikeyModel.OrderCompleted">
+              <MappingFragment StoreEntitySet="OrderCompleted">
+                <ScalarProperty Name="OrderCompletedId" ColumnName="OrderCompletedId" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Pair" ColumnName="Pair" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="AmountUSDT" ColumnName="AmountUSDT" />
+                <ScalarProperty Name="BuyPrice" ColumnName="BuyPrice" />
+                <ScalarProperty Name="SellPrice" ColumnName="SellPrice" />
+                <ScalarProperty Name="WallBuy" ColumnName="WallBuy" />
+                <ScalarProperty Name="WallSell" ColumnName="WallSell" />
+                <ScalarProperty Name="MinTickBuy" ColumnName="MinTickBuy" />
+                <ScalarProperty Name="MinTickSell" ColumnName="MinTickSell" />
+                <ScalarProperty Name="TickUp" ColumnName="TickUp" />
+                <ScalarProperty Name="ProfitPercentage" ColumnName="ProfitPercentage" />
+                <ScalarProperty Name="ProfitUSDT" ColumnName="ProfitUSDT" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="QRCodes">
+            <EntityTypeMapping TypeName="apikeyModel.QRCode">
+              <MappingFragment StoreEntitySet="QRCodes">
+                <ScalarProperty Name="QRCodeId" ColumnName="QRCodeId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Image" ColumnName="Image" />
+                <ScalarProperty Name="Filename" ColumnName="Filename" />
+                <ScalarProperty Name="TimeStamp" ColumnName="TimeStamp" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="apikeyModel.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ChatId" ColumnName="ChatId" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="ApiKey" ColumnName="ApiKey" />
+                <ScalarProperty Name="ApiSecret" ColumnName="ApiSecret" />
+                <ScalarProperty Name="EnableUpdate" ColumnName="EnableUpdate" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="BTC" ColumnName="BTC" />
+                <ScalarProperty Name="ETH" ColumnName="ETH" />
+                <ScalarProperty Name="Exchange" ColumnName="Exchange" />
+                <ScalarProperty Name="LTC" ColumnName="LTC" />
+                <ScalarProperty Name="USDT" ColumnName="USDT" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserSettings">
+            <EntityTypeMapping TypeName="apikeyModel.UserSetting">
+              <MappingFragment StoreEntitySet="UserSettings">
+                <ScalarProperty Name="USDT" ColumnName="USDT" />
+                <ScalarProperty Name="LTC" ColumnName="LTC" />
+                <ScalarProperty Name="ETH" ColumnName="ETH" />
+                <ScalarProperty Name="BTC" ColumnName="BTC" />
+                <ScalarProperty Name="UserSettingsId" ColumnName="UserSettingsId" />
+                <ScalarProperty Name="ApiKey" ColumnName="ApiKey" />
+                <ScalarProperty Name="SecretKey" ColumnName="SecretKey" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="database_firewall_rules">
+            <EntityTypeMapping TypeName="apikeyModel.database_firewall_rules">
+              <MappingFragment StoreEntitySet="database_firewall_rules">
+                <ScalarProperty Name="modify_date" ColumnName="modify_date" />
+                <ScalarProperty Name="create_date" ColumnName="create_date" />
+                <ScalarProperty Name="end_ip_address" ColumnName="end_ip_address" />
+                <ScalarProperty Name="start_ip_address" ColumnName="start_ip_address" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Nessuno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

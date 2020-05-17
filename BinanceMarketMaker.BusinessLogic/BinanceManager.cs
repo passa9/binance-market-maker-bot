@@ -15,7 +15,7 @@ namespace BinanceMarketMaker.BusinessLogic
         {
             this.binanceClient = binanceClient;
         }
-
+  
         public void Init()
         {
             var result = binanceClient.GetExchangeInfo();
