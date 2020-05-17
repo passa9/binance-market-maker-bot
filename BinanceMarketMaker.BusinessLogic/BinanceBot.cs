@@ -20,12 +20,10 @@ namespace BinanceMarketMaker.BusinessLogic
         private List<BinanceSymbol> symbols;
         private double fees;
         private SynchronizationContext context;
-        private Client client;
-        public BinanceBot(BinanceClient binanceClient, SynchronizationContext context, Client client)
+        public BinanceBot(BinanceClient binanceClient, SynchronizationContext context)
         {
             this.context = context;
             Orders = new ObservableCollection<Order>();
-            this.client = client;
 
             this.binanceClient = binanceClient;
             var webRequest = this.binanceClient.GetExchangeInfo();
@@ -515,7 +513,6 @@ namespace BinanceMarketMaker.BusinessLogic
                         WallBuy = order.BAlfaUSDT,
                         WallSell = order.SAlfaUSDT
                     };
-                    client.SendOrder(orderCompleted);
                 }
                 catch (Exception exception)
                 {

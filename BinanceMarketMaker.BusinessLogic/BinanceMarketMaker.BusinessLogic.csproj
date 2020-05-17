@@ -130,7 +130,6 @@
   <ItemGroup>
     <Compile Include="BinanceManager.cs" />
     <Compile Include="BinanceBot.cs" />
-    <Compile Include="Client.cs" />
     <Compile Include="ListExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnknowOrderException.cs" />

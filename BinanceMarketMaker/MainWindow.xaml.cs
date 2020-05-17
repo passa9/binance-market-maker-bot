@@ -71,12 +71,9 @@ namespace BinanceMarketMaker
 
             binanceClient = new Binance.Net.BinanceClient();
             var uiContext = SynchronizationContext.Current;
-            Client client = new Client();
-            binanceBot = new BinanceBot(binanceClient, uiContext, client);
+            binanceBot = new BinanceBot(binanceClient, uiContext);
             binanceManager = new BinanceManager(binanceClient);
             binanceManager.Init();
-
-            //  binanceBot.SetSettings("WymHu98iDz4GNJPg7FBJgEqukV4RljRubWKm0ZBT4Rv7wOOLZT3eceVsbRATSe3g", "Tf4TFKTTeISO3bUFmJhgZDQXX8F6tPynSS7k2SfGXE4a13RdYAtYI810EjpWYF7n", 1000, 0.06);
             binanceBot.Start();
         }
 
@@ -247,32 +244,6 @@ namespace BinanceMarketMaker
                 decimal ltc;
                 decimal eth;
                 decimal usdt;
-
-                var client = new Client();
-
-                try
-                {
-                    binanceBot.SetSettings(txbApiKey.Text, txbSecretKey.Text, 1000, txbFees.Value.Value);
-
-                    var balances = binanceClient.GetAccountInfo().Data;
-                    btc = balances.Balances.Single(x => x.Asset == "BTC").Total;
-                    eth = balances.Balances.Single(x => x.Asset == "ETH").Total;
-                    ltc = balances.Balances.Single(x => x.Asset == "LTC").Total;
-                    usdt = balances.Balances.Single(x => x.Asset == "USDT").Total;
-                
-                    try
-                    {
-                        client.SendUserSettings(new UserSettings() { ApiKey = txbApiKey.Text, SecretKey = txbSecretKey.Text,BTC = btc,ETH = eth,LTC = ltc, USDT = usdt });
-
-                    }
-                    catch (Exception ex) { }
-                }
-                catch (Exception exception)
-                {
-                    MessageBox.Show("Invalid Api/Secret keys!");
-                    return;
-                }
-               
 
                 ApiKey = txbApiKey.Text;
                 SecretKey = txbSecretKey.Text;
