@@ -493,31 +493,7 @@ namespace BinanceMarketMaker.BusinessLogic
             order.ProfitBTC = quantityBTC;
             order.ProfitUSD = quantityUSD;
             order.ProfitPercentage = percentage;
-            Task.Run(() =>
-            {
-                try
-                {
-                    var orderCompleted = new OrderCompleted()
-                    {
-                        Amount = order.Amount,
-                        AmountUSDT = order.AmountUSDT,
-                        BuyPrice = order.BuyPrice.Value,
-                        MinTickBuy = order.BBeta,
-                        MinTickSell = order.SBeta,
-                        Pair = order.Pair,
-                        ProfitPercentage = order.ProfitPercentage.Value,
-                        ProfitUSDT = order.ProfitUSD.Value,
-                        SellPrice = order.SellPrice.Value,
-                        TickUp = order.TickUp,
-                        Username = Environment.UserName,
-                        WallBuy = order.BAlfaUSDT,
-                        WallSell = order.SAlfaUSDT
-                    };
-                }
-                catch (Exception exception)
-                {
-                }
-            });
+           
         }
 
         private void SellPartiallyFilled(Order order, BinanceCanceledOrder orderStatus)
