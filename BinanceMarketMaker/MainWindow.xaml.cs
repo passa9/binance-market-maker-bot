@@ -144,7 +144,6 @@ namespace BinanceMarketMaker
 
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var licenseKey = (string)WPF.Properties.Settings.Default["LicenseKey"];
             var apiKey = (string)WPF.Properties.Settings.Default["ApiKey"];
             var secretKey = (string)WPF.Properties.Settings.Default["SecretKey"];
             var fees = (string)WPF.Properties.Settings.Default["Fees"];
@@ -238,11 +237,6 @@ namespace BinanceMarketMaker
                     MessageBox.Show("Invalid fees!");
                     return;
                 }
-
-                decimal btc;
-                decimal ltc;
-                decimal eth;
-                decimal usdt;
 
                 ApiKey = txbApiKey.Text;
                 SecretKey = txbSecretKey.Text;
