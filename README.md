@@ -1,4 +1,4 @@
-# Binance Marker Maker
+# Binance Market Maker
 
 Bot to automate trades of cryptocurrencies in Binance exchange.
 You can see stats about ticker, choose a crypto that you want to trade and then set the strategy.
